@@ -1,4 +1,25 @@
-# PostHog Plugin: Hello World Starter Kit
+# Work In Progress: Posthog Trend Alert Plugin
+
+## Purpose of this plugin
+This plugin should allow a user to trigger a webhook when a certain trend crosses a certain threshold
+
+This is a work in progress.
+
+## TODOs
+
+* Write Plugin
+   * Retrieve a trend 
+   * Act on a threshold for trend
+   * Trigger a webhook
+   * Schedule check on trend
+* Write Tests
+* Test Plugin
+* Create a Logo
+* Update Package.json
+* Update README
+
+
+--- Ignore below this line ---
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
