@@ -1,7 +1,7 @@
-# Work In Progress: Posthog Trend Alert Plugin
+# Work In Progress: Posthog Ingestion Alert Plugin
 
 ## Purpose of this plugin
-This plugin should allow a user to trigger a webhook when a certain trend crosses a certain threshold
+This plugin should allow a user to trigger a webhook when a ingestion becomes hits for a specified period
 
 This is a work in progress.
 
