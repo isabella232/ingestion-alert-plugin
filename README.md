@@ -1,51 +1,8 @@
-# Work In Progress: Posthog Ingestion Alert Plugin
-
-## Purpose of this plugin
-This plugin should allow a user to trigger a webhook when a ingestion becomes hits for a specified period
-
-This is a work in progress.
-
-## TODOs
-
-* Write Plugin
-   * Retrieve a trend 
-   * Act on a threshold for trend
-   * Trigger a webhook
-   * Schedule check on trend
-* Write Tests
-* Test Plugin
-* Create a Logo
-* Update Package.json
-* Update README
-
-
---- Ignore below this line ---
-
+# Posthog Ingestion Alert Plugin
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-This is a basic exemplary PostHog plugin. It adds property `"greeting"` to every event, with a configurable value (default: `"Hello world!"`).
-
-Feel free to use it as a base for your own plugins!
-
-## How to develop
-
-All of the plugin's code is located in the `index.js` file, which is JavaScript ran inside of PostHog.
-To get yourself up to speed with this environment, we sincerely recommend checking out our [Plugins overview in PostHog Docs]([the Plugins Overview](https://posthog.com/docs/plugins/build/overview).
-For a crash course, read our [plugin building tutorial in PostHog Docs](https://posthog.com/docs/plugins/build/tutorial).
-
-## How to test
-
-To test the plugin, you'll need to install a few `npm` dependencies already specified in `package.json`:
-```bash
-npm install
-```
-
-This will get you the testing library Jest and some our test helpers.
-Then to run tests it's just:
-
-```bash
-npm test
-```
+## Purpose of this plugin
+This plugin triggers a webhook when no events have been ingested for a specified period of time. It can be used to alert you when ingestion for your project / instance is not working correctly.
 
 ## How to install
 
@@ -53,6 +10,12 @@ npm test
 1. Open the Plugins page from the sidebar.
 1. Head to the Advanced tab.
 1. "Install from GitHub, GitLab or npm" using this repository's URL.
+
+## Things to be aware of
+* If you do not have a lot of users, or they are all based in the same timezone you may legitimately have 'dead periods' where no events are generated - increase the threshold if you wish reduce the noise 
+* If an alert has already been triggered and ingestion has not recovered for an extended period, you will not receieve another reminder that it is down
+* This is helpful to monitor if there are any ingestion issues within your posthog instance and within your setup (e.g. using the wrong project key)
+* If the plugin server itself is down, this plugin will not be able to alert you that ingestion has stopped
 
 ## Questions?
 
