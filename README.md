@@ -12,7 +12,7 @@ This plugin triggers a webhook when no events have been ingested for a specified
 1. "Install from GitHub, GitLab or npm" using this repository's URL.
 
 ## Things to be aware of
-* If you do not have a lot of users, or they are all based in the same timezone you may legitimately have 'dead periods' where no events are generated - increase the threshold if you wish reduce the noise 
+* If you do not have a lot of users, or they are all based in the same timezone you may legitimately have 'dead periods' where no events are generated - increase the threshold if you wish reduce the noise, you can use the [heartbeat plugin](https://github.com/PostHog/posthog-heartbeat-plugin) to trigger events during dead periods if you wish to only monitor the ingestion pipeline
 * If an alert has already been triggered and ingestion has not recovered for an extended period, you will not receieve another reminder that it is down
 * This is helpful to monitor if there are any ingestion issues within your posthog instance and within your setup (e.g. using the wrong project key)
 * If the plugin server itself is down, this plugin will not be able to alert you that ingestion has stopped
