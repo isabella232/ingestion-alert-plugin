@@ -1,38 +1,27 @@
 export async function runEveryMinute(meta) {
-    const activeAlertKey = await meta.cache.get("pagerduty_active_incident")
-    const isInError = await isTrendErroring(meta)
+    const activeAlertKey = await meta.cache.get("active_alert")
+    const isInError = await isNoEventsInPeriod(meta)
 
-    if (activeIncidentKey && !isInError) {
-        await resolveAlert(activeAlertKey, meta)
-        console.log('Resolved alert', activeAlertKey)
+    if (activeAlertKey && !isInError) {
+        await resolveAlert(meta)
+        console.info('Resolved ingestion alert', activeAlertKey)
     } else if (!activeAlertKey && isInError) {
         const key = await triggerAlert(meta)
-        console.log('Triggered alert', key)
+        console.warn('Triggered ingesion alert', key)
     } else if (isInError) {
-        console.log('Alert is active, ignoring for now')
+        console.warn('Ingestion alert is already active')
     } else {
-        console.log('All good! 😍')
+        console.log('Ingestion OK')
     }
 }
 
-async function isTrendErroring(meta) {
-    ///Lets just see if this zero for specified period
-    const { data } = await getTrend(meta)
-    return !data.slice(-2).some((value) =>
-        !dataPointInError(value, parseFloat(meta.config.threshold), meta.config.operator)
-    )
-}
-
-function dataPointInError(value, threshold, operator) {
-    if (operator.startsWith('≤')) {
-        return value <= threshold
-    } else {
-        return value >= threshold
-    }
+async function isNoEventsInPeriod(meta) {
+    const events = await getTrend(meta)
+    return events.length == 0
 }
 
 async function getTrend(meta) {
-    const response = await fetch(insightsApiUrl(meta.config.posthogTrendUrl), {
+    const response = await fetch(eventsApiUrl(meta.config.posthogHost, meta.config.timeRange), {
         headers: {
             authorization: `Bearer ${meta.config.posthogApiKey}`
         }
@@ -44,32 +33,39 @@ async function getTrend(meta) {
 
     const results = await response.json()
 
-    console.log('Got PostHog trends response', results)
-    return results.result[0]
+    return results.results
 }
 
 async function triggerAlert(meta) {
-    // Trigger WebHook, set uniuque key
-    await meta.cache.set("active_alert", "key") 
+    let key = "no_events"
+    await triggerWebHook(meta,'trigger')
+    await meta.cache.set("active_alert", key)
+    return key
 }
 
-async function resolveAlert(incidentKey, meta) {
+async function resolveAlert(meta) {
+    await triggerWebHook(meta,'resolved')
     await meta.cache.set("active_alert", null)
 }
 
-function insightsApiUrl(trendsUrl) {
-    let url = new URL(trendsUrl)
+async function triggerWebHook(meta, status){
+    var webHookUrl = meta.config.webHookUrlTriggered
+    if(status === 'resolved'){
+        webHookUrl = meta.config.webHookUrlResolved
+    }
 
-    ///Lets configure this manually https://posthog.com/docs/api/insights
+    const response = await fetch(webHookUrl)
+    
+    if (!response.ok) {
+        throw Error(`Error from WebHook: status=${response.status} response=${await response.text()}`)
+    }
 
+    return response
+}
+
+function eventsApiUrl(instanceURL, timeRange) {
+    let time_from = new Date(Date.now() - (parseInt(timeRange)*60*1000)).toISOString()
+    let url = new URL(`${instanceURL}/api/event?after=${time_from}`)
     url.searchParams.set('refresh', 'true')
-    if (url.pathname === '/insights') {
-        url = new URL(`${url.origin}/api/insight/trend${url.search}${url.hash}`)
-    }
-
-    if (!url.pathname.startsWith('/api/insight/trend')) {
-        throw Error(`Not a valid trends URL: ${trendsUrl}`)
-    }
-
     return url.href
 }

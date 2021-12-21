@@ -1,15 +1,53 @@
 {
-    "name": "Hello World",
-    "url": "https://github.com/PostHog/posthog-hello-world-plugin",
-    "description": "Greet the world with every PostHog event. An example plugin.",
+    "name": "Posthog Ingestion Alert Plugin",
+    "url": "https://github.com/PostHog/ingestion-alert-plugin",
+    "description": "Trigger Webhooks when no events have been ingested to PostHog for a specified time period",
     "main": "index.js",
+    "posthogVersion": ">=1.26.0",
     "config": [
         {
-            "key": "greeting",
-            "name": "What greeting would you like to use?",
-            "type": "string",
-            "default": "Hello world!",
-            "required": false
+          "markdown": "Every minute plugin check for new events and alert when there have been zero within the chosen period"
+        },
+        {
+          "key": "timeRange",
+          "hint": "This is the number of consecutive minutes with no events before the alert will trigger",
+          "name": "No Ingestion Time Range (minutes)",
+          "type": "string",
+          "default": "30",
+          "required": true
+        },
+        {
+          "key": "webHookUrlTriggered",
+          "hint": "This is the webhook we will call when no new events have been detected in the set time range",
+          "name": "WebHook Trigger Alert URL",
+          "type": "string",
+          "default": "",
+          "required": true
+        },
+        {
+          "key": "webHookUrlResolved",
+          "hint": "This is the webhook we will call when new events have been detected again",
+          "name": "WebHook Resolve Alert URL",
+          "type": "string",
+          "default": "",
+          "required": true
+        },
+        {
+          "key": "posthogApiKey",
+          "hint": "Your Personal API Key is not the same as the Project API key",
+          "name": "PostHog API Key",
+          "type": "string",
+          "secret": true,
+          "default": "",
+          "required": true
+        },
+        {
+          "key": "posthogHost",
+          "hint": "Used to monitor ingestion",
+          "name": "URL of your PostHog instance",
+          "type": "string",
+          "default": "myposthog",
+          "required": true
         }
-    ]
+      ]
 }
